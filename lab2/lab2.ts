@@ -1,5 +1,3 @@
-import { json } from "stream/consumers";
-
 let arr1: number[] = [4, 14, 1345, 14, 1, 4, 14, -124, 2, 0, 45, -34];
 
 function minElem(arr: number[]): number{
