@@ -67,7 +67,7 @@ interface IVehicle{
     yearOfRelease: number;
     VIN_number: number;
     registrationNumber: number;
-    descriptionOwner: string;
+    owner: IOwner;
     showInfo(): void;
 }
 class Vehicle implements IVehicle{
@@ -76,15 +76,15 @@ class Vehicle implements IVehicle{
     private _yearOfRelease: number;
     private _VIN_number: number;
     private _registrationNumber: number;
-    private _descriptionOwner: string;
+    private _owner: IOwner;
 
-    constructor(mark: string, model: string, yearOfRelease: number, VIN_number: number, registrationNumber: number, descriptionOwner: string){
+    constructor(mark: string, model: string, yearOfRelease: number, VIN_number: number, registrationNumber: number, owner: IOwner){
         this._mark = mark;
         this._model = model;
         this._yearOfRelease = yearOfRelease;
         this._VIN_number = VIN_number;
         this._registrationNumber = registrationNumber;
-        this._descriptionOwner = descriptionOwner;
+        this._owner = owner;
     }
     get mark(): string {return this._mark;}
     set mark(mark: string) {this._mark = mark;}
@@ -101,11 +101,11 @@ class Vehicle implements IVehicle{
     get registrationNumber(): number {return this._registrationNumber;}
     set registrationNumber(registrationNumber: number) {this._registrationNumber = registrationNumber}
 
-    get descriptionOwner(): string {return this._descriptionOwner;}
-    set descriptionOwner(descriptionOwner: string) {this._descriptionOwner = descriptionOwner;}
+    get owner(): IOwner {return this._owner;}
+    set owner(owner: IOwner) {this._owner = owner;}
 
     showInfo(): void{
-        console.log(this._mark, this._model, this._VIN_number, this._descriptionOwner, this._registrationNumber, this._yearOfRelease);
+        console.log(this._mark, this._model, this._VIN_number, this._owner, this._registrationNumber, this._yearOfRelease);
     }
 }
 
@@ -130,8 +130,8 @@ class Car extends Vehicle implements ICar{
 
     private _carcase: CarcaseType;
     private _classCar: ClassCar;
-    constructor(mark: string, model: string, yearOfRelease: number, VIN_number: number, registrationNumber: number, descriptionOwner: string, carcase: CarcaseType, classCar: ClassCar){
-        super(mark, model, yearOfRelease, VIN_number, registrationNumber, descriptionOwner);
+    constructor(mark: string, model: string, yearOfRelease: number, VIN_number: number, registrationNumber: number, owner: IOwner, carcase: CarcaseType, classCar: ClassCar){
+        super(mark, model, yearOfRelease, VIN_number, registrationNumber, owner);
         this._carcase = carcase;
         this._classCar = classCar;
     }
@@ -153,8 +153,8 @@ interface IMotorbike{
 class Motorbike extends Vehicle implements IMotorbike {
     private _frameType: string;
     private _forSport: boolean;
-    constructor(mark: string, model: string, yearOfRelease: number, VIN_number: number, registrationNumber: number, descriptionOwner: string, forSport: boolean, frameType: string){
-        super(mark, model, yearOfRelease, VIN_number, registrationNumber, descriptionOwner);
+    constructor(mark: string, model: string, yearOfRelease: number, VIN_number: number, registrationNumber: number, owner: IOwner, forSport: boolean, frameType: string){
+        super(mark, model, yearOfRelease, VIN_number, registrationNumber, owner);
         this._forSport = forSport;
         this._frameType = frameType;
     }
@@ -172,7 +172,8 @@ class Motorbike extends Vehicle implements IMotorbike {
 interface IVehicleStorage<T extends IVehicle>{
     dateCreate: Date;
     data: T[];
-    getAll(): T[];  
+    getAll(): T[];
+    save(data: T): void;
 }
 
 class VehicleStorage<T extends IVehicle> implements IVehicleStorage<T>{
@@ -186,6 +187,36 @@ class VehicleStorage<T extends IVehicle> implements IVehicleStorage<T>{
     get dateCreate(): Date {return this._dateCreate;}
 
     get data(): T[] {return this._data;}
+    
+    save(data: T): void {
+        this._data.push(data);
+    }
 
     getAll(): T[] {return this._data;}
 }
+
+const owner: IOwner = new Owner("Борисов", "Юрий", "Андреевич", new Date(), Docs.PASSPORT, 324444124, 244444);
+const car1: ICar = new Car("Ford", "Focus", 2009, 2444, 32131, owner, CarcaseType.Crossover, ClassCar.B);
+const car2: ICar = new Car("Sckoda", "Octavia", 2019, 24434, 561365, owner, CarcaseType.SEDAN, ClassCar.C);
+
+
+const owner1: IOwner = new Owner("Каштанов", "Олег", "Дмитриевич", new Date(), Docs.POLIC, 23525, 325765);
+
+const bike1: IMotorbike = new Motorbike("cool", "colcol", 2014, 12421, 2144, owner1, true, "маленький");
+const bike2: IMotorbike = new Motorbike("lave", "lamelame", 2020, 5325235, 2352, owner1, false, "большой");
+
+
+const v1: IVehicle = new Vehicle("Boomer", "B32", 2010, 242, 21421, owner1);
+const v2: IVehicle = new Vehicle("Coomer", "C32", 2025, 2134, 124, owner1);
+const v3: IVehicle = new Vehicle("Toyota", "Raf4", 2024, 242, 56845, owner1);
+const v4: IVehicle = new Vehicle("Skoda", "C31", 2014, 1241, 23523, owner1);
+const v5: IVehicle = new Vehicle("Ror", "odod", 2019, 3333, 313333, owner);
+
+const vehicleStorage: IVehicleStorage<IVehicle> = new VehicleStorage();
+vehicleStorage.save(v1);
+vehicleStorage.save(v2);
+vehicleStorage.save(v3);
+vehicleStorage.save(v4);
+vehicleStorage.save(v5);
+
+console.log(vehicleStorage.getAll());
